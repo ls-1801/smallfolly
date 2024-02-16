@@ -9,18 +9,14 @@ add_library(smallfolly
         folly/folly/detail/Futex.cpp
         folly/folly/detail/ThreadLocalDetail.cpp
         folly/folly/detail/StaticSingletonManager.cpp
-        folly/folly/system/AtFork.cpp
+        folly/folly/detail/AtFork.cpp
         folly/folly/system/ThreadId.cpp
         folly/folly/synchronization/ParkingLot.cpp
         folly/folly/synchronization/SanitizeThread.cpp
 )
 
-find_package(fmt REQUIRED)
-find_package(double-conversion REQUIRED)
 set(include_dest "include/folly")
 set(main_lib_dest "lib")
-
-target_compile_options(smallfolly PRIVATE "-flto" "-O3")
 
 target_include_directories(smallfolly PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/folly> # for headers when building
@@ -28,7 +24,7 @@ target_include_directories(smallfolly PUBLIC
         $<INSTALL_INTERFACE:${include_dest}> # for client in install mode
         $<INSTALL_INTERFACE:${lib_dest}> # for config_impl.hpp in install mode
 )
-target_link_libraries(smallfolly PRIVATE fmt::fmt double-conversion::double-conversion)
+target_link_libraries(smallfolly )
 
 set(header_path "folly/folly")
 set(header
@@ -104,7 +100,6 @@ set(lang
         ${header_path}/StaticConst.h
         ${header_path}/Align.h
         ${header_path}/Exception.h
-        ${header_path}/Builtin.h
         ${header_path}/SafeAssert.h
         ${header_path}/CArray.h
         ${header_path}/CString.h
@@ -112,9 +107,8 @@ set(lang
         ${header_path}/Thunk.h
         ${header_path}/Bits.h
         ${header_path}/Assume.h
+        ${header_path}/Assume-inl.h
         ${header_path}/CheckedMath.h
-        ${header_path}/Hint.h
-        ${header_path}/Hint-inl.h
         ${header_path}/UncaughtExceptions.h
 )
 
@@ -129,6 +123,7 @@ set(detail
         ${header_path}/UniqueInstance.h
         ${header_path}/ThreadLocalDetail.h
         ${header_path}/RangeCommon.h
+        ${header_path}/AtFork.h
         ${header_path}/RangeSse42.h
         ${header_path}/Futex-inl.h
 )
@@ -149,9 +144,9 @@ set(synchronization
         ${header_path}/HazptrRec.h
         ${header_path}/HazptrThrLocal.h
         ${header_path}/SanitizeThread.h
-        ${header_path}/AsymmetricThreadFence.h
         ${header_path}/MicroSpinLock.h
         ${header_path}/SaturatingSemaphore.h
+        ${header_path}/AsymmetricMemoryBarrier.h
         ${header_path}/WaitOptions.h
         ${header_path}/AtomicUtil.h
         ${header_path}/AtomicUtil-inl.h
@@ -186,7 +181,6 @@ set(container
 set(header_path "folly/folly/system")
 set(system
         ${header_path}/ThreadId.h
-        ${header_path}/AtFork.h
 )
 set(header_path "folly/folly/chrono")
 set(chrono
@@ -211,7 +205,7 @@ install(FILES ${chrono} DESTINATION "${include_dest}/chrono")
 install(FILES ${memory_detail} DESTINATION "${include_dest}/memory/detail")
 
 install(FILES "config/folly/folly-config.h" DESTINATION "${include_dest}")
-install(FILES "stub/logging.h" DESTINATION "${include_dest}/stub")
+install(FILES "folly/folly/stub/logging.h" DESTINATION "${include_dest}/stub")
 install(FILES cmake/smallfolly-config.cmake DESTINATION "${main_lib_dest}/cmake/smallfolly")
 install(TARGETS smallfolly EXPORT smallfolly DESTINATION "${main_lib_dest}")
 install(EXPORT smallfolly DESTINATION "${main_lib_dest}/cmake/smallfolly")

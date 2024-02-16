@@ -1,0 +1,169 @@
+diff --git a/folly/Exception.h b/folly/Exception.h
+index d446e29bf..3b3118c61 100644
+--- a/folly/Exception.h
++++ b/folly/Exception.h
+@@ -22,7 +22,7 @@
+ #include <stdexcept>
+ #include <system_error>
+ 
+-#include <folly/Conv.h>
++// #include <folly/Conv.h>
+ #include <folly/FBString.h>
+ #include <folly/Likely.h>
+ #include <folly/Portability.h>
+diff --git a/folly/Singleton.h b/folly/Singleton.h
+index d7f094748..59d96bbde 100644
+--- a/folly/Singleton.h
++++ b/folly/Singleton.h
+@@ -151,7 +151,7 @@
+ #include <unordered_set>
+ #include <vector>
+ 
+-#include <glog/logging.h>
++#include <folly/stub/logging.h>
+ 
+ // use this guard to handleSingleton breaking change in 3rd party code
+ #ifndef FOLLY_SINGLETON_TRY_GET
+diff --git a/folly/String.cpp b/folly/String.cpp
+index 804bfa066..a6f5c8ae4 100644
+--- a/folly/String.cpp
++++ b/folly/String.cpp
+@@ -24,7 +24,7 @@
+ #include <sstream>
+ #include <stdexcept>
+ 
+-#include <glog/logging.h>
++#include <folly/stub/logging.h>
+ 
+ #include <folly/Portability.h>
+ #include <folly/ScopeGuard.h>
+diff --git a/folly/Synchronized.h b/folly/Synchronized.h
+index 26b0b14cf..7fa800760 100644
+--- a/folly/Synchronized.h
++++ b/folly/Synchronized.h
+@@ -35,7 +35,7 @@
+ #include <folly/functional/ApplyTuple.h>
+ #include <folly/synchronization/Lock.h>
+ 
+-#include <glog/logging.h>
++#include <folly/stub/logging.h>
+ 
+ #include <array>
+ #include <mutex>
+diff --git a/folly/concurrency/DynamicBoundedQueue.h b/folly/concurrency/DynamicBoundedQueue.h
+index 2963629e0..ac71f149a 100644
+--- a/folly/concurrency/DynamicBoundedQueue.h
++++ b/folly/concurrency/DynamicBoundedQueue.h
+@@ -19,7 +19,7 @@
+ #include <folly/concurrency/CacheLocality.h>
+ #include <folly/concurrency/UnboundedQueue.h>
+ 
+-#include <glog/logging.h>
++#include <folly/stub/logging.h>
+ 
+ #include <atomic>
+ #include <chrono>
+diff --git a/folly/concurrency/UnboundedQueue.h b/folly/concurrency/UnboundedQueue.h
+index 30f22f7d3..5c3226e24 100644
+--- a/folly/concurrency/UnboundedQueue.h
++++ b/folly/concurrency/UnboundedQueue.h
+@@ -20,7 +20,7 @@
+ #include <chrono>
+ #include <memory>
+ 
+-#include <glog/logging.h>
++#include <folly/stub/logging.h>
+ 
+ #include <folly/ConstexprMath.h>
+ #include <folly/Optional.h>
+diff --git a/folly/detail/ThreadLocalDetail.h b/folly/detail/ThreadLocalDetail.h
+index a00741f84..49aecf9bf 100644
+--- a/folly/detail/ThreadLocalDetail.h
++++ b/folly/detail/ThreadLocalDetail.h
+@@ -25,7 +25,7 @@
+ #include <thread>
+ #include <vector>
+ 
+-#include <glog/logging.h>
++#include <folly/stub/logging.h>
+ 
+ #include <folly/Exception.h>
+ #include <folly/Function.h>
+diff --git a/folly/detail/TurnSequencer.h b/folly/detail/TurnSequencer.h
+index 67a227f58..70321db66 100644
+--- a/folly/detail/TurnSequencer.h
++++ b/folly/detail/TurnSequencer.h
+@@ -19,7 +19,7 @@
+ #include <algorithm>
+ #include <limits>
+ 
+-#include <glog/logging.h>
++#include <folly/stub/logging.h>
+ 
+ #include <folly/Portability.h>
+ #include <folly/chrono/Hardware.h>
+diff --git a/folly/synchronization/HazptrObj.h b/folly/synchronization/HazptrObj.h
+index a872d8c70..3f4da84e0 100644
+--- a/folly/synchronization/HazptrObj.h
++++ b/folly/synchronization/HazptrObj.h
+@@ -19,7 +19,7 @@
+ #include <atomic>
+ #include <memory>
+ 
+-#include <glog/logging.h>
++#include <folly/stub/logging.h>
+ 
+ #include <folly/CPortability.h>
+ #include <folly/Portability.h>
+diff --git a/folly/synchronization/HazptrObjLinked.h b/folly/synchronization/HazptrObjLinked.h
+index 772b442c6..d68369ad5 100644
+--- a/folly/synchronization/HazptrObjLinked.h
++++ b/folly/synchronization/HazptrObjLinked.h
+@@ -19,7 +19,7 @@
+ #include <atomic>
+ #include <stack>
+ 
+-#include <glog/logging.h>
++#include <folly/stub/logging.h>
+ 
+ #include <folly/synchronization/Hazptr-fwd.h>
+ #include <folly/synchronization/HazptrObj.h>
+diff --git a/folly/synchronization/HazptrThrLocal.h b/folly/synchronization/HazptrThrLocal.h
+index 85c3f1899..1d541d951 100644
+--- a/folly/synchronization/HazptrThrLocal.h
++++ b/folly/synchronization/HazptrThrLocal.h
+@@ -22,7 +22,7 @@
+ 
+ #include <atomic>
+ 
+-#include <glog/logging.h>
++#include <folly/stub/logging.h>
+ 
+ #include <folly/SingletonThreadLocal.h>
+ #include <folly/synchronization/HazptrObj.h>
+diff --git a/folly/synchronization/SaturatingSemaphore.h b/folly/synchronization/SaturatingSemaphore.h
+index 23399b606..be7cb077a 100644
+--- a/folly/synchronization/SaturatingSemaphore.h
++++ b/folly/synchronization/SaturatingSemaphore.h
+@@ -18,7 +18,7 @@
+ 
+ #include <atomic>
+ 
+-#include <glog/logging.h>
++#include <folly/stub/logging.h>
+ 
+ #include <folly/Likely.h>
+ #include <folly/detail/Futex.h>
+diff --git a/folly/synchronization/detail/HazptrUtils.h b/folly/synchronization/detail/HazptrUtils.h
+index 2a974ec3d..63d6affe6 100644
+--- a/folly/synchronization/detail/HazptrUtils.h
++++ b/folly/synchronization/detail/HazptrUtils.h
+@@ -19,7 +19,7 @@
+ #include <atomic>
+ #include <thread>
+ 
+-#include <glog/logging.h>
++#include <folly/stub/logging.h>
+ 
+ #include <folly/Portability.h>
+ #include <folly/synchronization/detail/Sleeper.h>

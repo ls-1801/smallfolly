@@ -21,10 +21,10 @@ set(main_lib_dest "lib")
 target_include_directories(smallfolly PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/folly> # for headers when building
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/config> # for config_impl.hpp when building
-        $<INSTALL_INTERFACE:${include_dest}> # for client in install mode
+        $<INSTALL_INTERFACE:include> # for client in install mode
         $<INSTALL_INTERFACE:${lib_dest}> # for config_impl.hpp in install mode
 )
-target_link_libraries(smallfolly )
+target_link_libraries(smallfolly)
 
 set(header_path "folly/folly")
 set(header

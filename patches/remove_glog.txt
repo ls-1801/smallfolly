@@ -1,0 +1,14 @@
+diff --git a/folly/synchronization/HazptrObj.h b/folly/synchronization/HazptrObj.h
+index a872d8c70..38b605d6a 100644
+--- a/folly/synchronization/HazptrObj.h
++++ b/folly/synchronization/HazptrObj.h
+@@ -386,8 +386,7 @@ class hazptr_obj_cohort {
+         if (kIsDebug) {
+           Obj* p = ll.head();
+           for (int i = 1; p; ++i, p = p->next()) {
+-            DCHECK_EQ(reinterpret_cast<uintptr_t>(p) & 7, uintptr_t{0})
+-                << p << " " << i;
++            DCHECK_EQ(reinterpret_cast<uintptr_t>(p) & 7, uintptr_t{0});
+           }
+         }
+         hazptr_obj_list<Atom> l(ll.head(), ll.tail(), c);

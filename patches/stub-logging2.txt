@@ -1,0 +1,72 @@
+diff --git a/folly/Executor.cpp b/folly/Executor.cpp
+index 39c6b151c..ce7a725f3 100644
+--- a/folly/Executor.cpp
++++ b/folly/Executor.cpp
+@@ -18,7 +18,7 @@
+ 
+ #include <stdexcept>
+ 
+-#include <glog/logging.h>
++#include <folly/stub/logging.h>
+ 
+ #include <folly/ExceptionString.h>
+ #include <folly/Portability.h>
+diff --git a/folly/GLog.h b/folly/GLog.h
+index b2b3c0872..92ee5bc37 100644
+--- a/folly/GLog.h
++++ b/folly/GLog.h
+@@ -21,7 +21,8 @@
+ #include <atomic>
+ #include <chrono>
+ 
+-#include <glog/logging.h>
++#include <folly/stub/logging.h>
++#define WARNING 0
+ 
+ #ifndef FB_LOG_EVERY_MS
+ /**
+diff --git a/folly/detail/MemoryIdler.cpp b/folly/detail/MemoryIdler.cpp
+index 0134a4c29..2b7ee2da9 100644
+--- a/folly/detail/MemoryIdler.cpp
++++ b/folly/detail/MemoryIdler.cpp
+@@ -190,7 +190,6 @@ void MemoryIdler::unmapUnusedStack(size_t retain) {
+     // are bad.) Warn in debug mode, since MemoryIdler may not function as
+     // expected.
+     // We can also get an EAGAIN, theoretically.
+-    PLOG_IF(WARNING, kIsDebug && errno == EINVAL) << "madvise failed";
+     assert(errno == EAGAIN || errno == ENOMEM || errno == EINVAL);
+   }
+ }
+diff --git a/folly/memory/MallctlHelper.cpp b/folly/memory/MallctlHelper.cpp
+index 2af9ab403..4a032e715 100644
+--- a/folly/memory/MallctlHelper.cpp
++++ b/folly/memory/MallctlHelper.cpp
+@@ -16,22 +16,14 @@
+ 
+ #include <folly/memory/MallctlHelper.h>
+ 
+-#include <folly/Format.h>
+-#include <folly/String.h>
+ 
+ #include <stdexcept>
+ 
+ namespace folly {
+-
+-namespace detail {
+-
+-[[noreturn]] void handleMallctlError(const char* fn, const char* cmd, int err) {
+-  assert(err != 0);
+-  cmd = cmd ? cmd : "<none>";
+-  throw std::runtime_error(
+-      sformat("mallctl[{}] {}: {} ({})", fn, cmd, errnoStr(err), err));
+-}
+-
+-} // namespace detail
+-
++    namespace detail {
++        [[noreturn]] void handleMallctlError(const char *fn, const char *cmd, int err) {
++            assert(err != 0);
++            throw std::runtime_error("fancy exception here");
++        }
++    } // namespace detail
+ } // namespace folly

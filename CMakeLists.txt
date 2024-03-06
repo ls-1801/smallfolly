@@ -13,6 +13,16 @@ add_library(smallfolly
         folly/folly/system/ThreadId.cpp
         folly/folly/synchronization/ParkingLot.cpp
         folly/folly/synchronization/SanitizeThread.cpp
+        folly/folly/detail/MemoryIdler.cpp
+        folly/folly/detail/UniqueInstance.cpp
+        folly/folly/Demangle.cpp
+        folly/folly/synchronization/Hazptr.cpp
+        folly/folly/memory/MallctlHelper.cpp
+        folly/folly/executors/QueuedImmediateExecutor.cpp
+        folly/folly/Executor.cpp
+        folly/folly/lang/CString.cpp
+        folly/folly/lang/Exception.cpp
+        folly/folly/ExceptionString.cpp
 )
 
 set(include_dest "include/folly")

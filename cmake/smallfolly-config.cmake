@@ -1,2 +1,5 @@
-get_filename_component(SELF_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
-include(${SELF_DIR}/smallfolly.cmake)
+@PACKAGE_INIT@
+
+include(${CMAKE_CURRENT_LIST_DIR}/smallfolly-targets.cmake)
+
+check_required_components(smallfolly)

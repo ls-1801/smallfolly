@@ -1,6 +1,7 @@
-project(smallfolly)
 cmake_minimum_required(VERSION 3.25)
+project(smallfolly)
 
+set(CMAKE_CXX_STANDARD 20)
 
 add_library(smallfolly
         folly/folly/SharedMutex.cpp
@@ -15,16 +16,46 @@ add_library(smallfolly
         folly/folly/synchronization/SanitizeThread.cpp
 )
 
-set(include_dest "include/folly")
-set(main_lib_dest "lib")
+target_compile_features(smallfolly PRIVATE cxx_std_20)
 
 target_include_directories(smallfolly PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/folly> # for headers when building
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/config> # for config_impl.hpp when building
-        $<INSTALL_INTERFACE:include> # for client in install mode
-        $<INSTALL_INTERFACE:${lib_dest}> # for config_impl.hpp in install mode
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/folly>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/config>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+
+# Config
+configure_package_config_file(cmake/config.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake # cmake-build-debug/
+        INSTALL_DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME} NO_SET_AND_CHECK_MACRO) # share/
+
+# Version
+write_basic_package_version_file(
+        ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake
+        VERSION 0.0.1
+        COMPATIBILITY SameMajorVersion)
+
+# Install Config & Version
+install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake # cmake-build-debug/
+        ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake # cmake_build-debug/
+        DESTINATION
+        ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}) # share/
+
+# Create export set to enable import in other CMake Projects
+install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}-targets # create export set
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} # lib/
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} # lib/
+        INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} # include/
 )
-target_link_libraries(smallfolly)
+# Install Export Set
+install(EXPORT ${PROJECT_NAME}-targets
+        NAMESPACE smallfolly::
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME})
+
+
 
 set(header_path "folly/folly")
 set(header
@@ -187,6 +218,8 @@ set(chrono
         ${header_path}/Hardware.h
 )
 
+# Install Headers
+set(include_dest ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
 # in src/CMakeLists.txt
 install(FILES ${header} DESTINATION "${include_dest}")
 install(FILES ${hash} DESTINATION "${include_dest}/hash")
@@ -203,9 +236,5 @@ install(FILES ${container} DESTINATION "${include_dest}/container")
 install(FILES ${system} DESTINATION "${include_dest}/system")
 install(FILES ${chrono} DESTINATION "${include_dest}/chrono")
 install(FILES ${memory_detail} DESTINATION "${include_dest}/memory/detail")
-
 install(FILES "config/folly/folly-config.h" DESTINATION "${include_dest}")
 install(FILES "folly/folly/stub/logging.h" DESTINATION "${include_dest}/stub")
-install(FILES cmake/smallfolly-config.cmake DESTINATION "${main_lib_dest}/cmake/smallfolly")
-install(TARGETS smallfolly EXPORT smallfolly DESTINATION "${main_lib_dest}")
-install(EXPORT smallfolly DESTINATION "${main_lib_dest}/cmake/smallfolly")

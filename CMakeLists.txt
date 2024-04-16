@@ -14,8 +14,17 @@ add_library(smallfolly
         folly/folly/system/ThreadId.cpp
         folly/folly/synchronization/ParkingLot.cpp
         folly/folly/synchronization/SanitizeThread.cpp
-)
 
+
+        # Required for MPMC
+        folly/folly/synchronization/AsymmetricMemoryBarrier.cpp
+        folly/folly/synchronization/Hazptr.cpp
+        folly/folly/detail/MemoryIdler.cpp
+        folly/folly/detail/UniqueInstance.cpp
+        folly/folly/executors/QueuedImmediateExecutor.cpp
+        folly/folly/lang/SafeAssert.cpp
+)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 target_compile_features(smallfolly PRIVATE cxx_std_20)
 
 target_include_directories(smallfolly PUBLIC
@@ -219,7 +228,7 @@ set(chrono
 )
 
 # Install Headers
-set(include_dest ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
+set(include_dest ${CMAKE_INSTALL_INCLUDEDIR}/folly)
 # in src/CMakeLists.txt
 install(FILES ${header} DESTINATION "${include_dest}")
 install(FILES ${hash} DESTINATION "${include_dest}/hash")

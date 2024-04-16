@@ -11,6 +11,73 @@ index d446e29bf..3b3118c61 100644
  #include <folly/FBString.h>
  #include <folly/Likely.h>
  #include <folly/Portability.h>
+diff --git a/folly/Executor.cpp b/folly/Executor.cpp
+index 39c6b151c..ce7a725f3 100644
+--- a/folly/Executor.cpp
++++ b/folly/Executor.cpp
+@@ -18,7 +18,7 @@
+ 
+ #include <stdexcept>
+ 
+-#include <glog/logging.h>
++#include <folly/stub/logging.h>
+ 
+ #include <folly/ExceptionString.h>
+ #include <folly/Portability.h>
+diff --git a/folly/GLog.h b/folly/GLog.h
+index b2b3c0872..92ee5bc37 100644
+--- a/folly/GLog.h
++++ b/folly/GLog.h
+@@ -21,7 +21,8 @@
+ #include <atomic>
+ #include <chrono>
+ 
+-#include <glog/logging.h>
++#include <folly/stub/logging.h>
++#define WARNING 0
+ 
+ #ifndef FB_LOG_EVERY_MS
+ /**
+diff --git a/folly/Portability.h b/folly/Portability.h
+index 10b563baf..0ed7ccd9f 100644
+--- a/folly/Portability.h
++++ b/folly/Portability.h
+@@ -534,35 +534,7 @@ constexpr auto kCpplibVer = 0;
+ #define FOLLY_STORAGE_CONSTEXPR constexpr
+ #endif
+ 
+-#if __cplusplus >= 201703L
+-// folly::coro requires C++17 support
+-#if defined(_WIN32) && defined(__clang__) && !defined(LLVM_COROUTINES)
+-// LLVM and MSVC coroutines are ABI incompatible, so for the MSVC implementation
+-// of <experimental/coroutine> on Windows we *don't* have coroutines.
+-//
+-// LLVM_COROUTINES indicates that LLVM compatible header is added to include
+-// path and can be used.
+-//
+-// Worse, if we define FOLLY_HAS_COROUTINES 1 we will include
+-// <experimental/coroutine> which will conflict with anyone who wants to load
+-// the LLVM implementation of coroutines on Windows.
+-#define FOLLY_HAS_COROUTINES 0
+-#elif (__cpp_coroutines >= 201703L || __cpp_impl_coroutine >= 201902L) && \
+-    ((__has_include(<coroutine>) && !defined(__clang__)) || (__has_include(<experimental/coroutine>) && defined(__clang__)))
+-#define FOLLY_HAS_COROUTINES 1
+-// This is mainly to workaround bugs triggered by LTO, when stack allocated
+-// variables in await_suspend end up on a coroutine frame.
+-#define FOLLY_CORO_AWAIT_SUSPEND_NONTRIVIAL_ATTRIBUTES FOLLY_NOINLINE
+-#elif _MSC_VER && _RESUMABLE_FUNCTIONS_SUPPORTED
+-// NOTE: MSVC 2017 does not currently support the full Coroutines TS since it
+-// does not yet support symmetric-transfer.
+-#define FOLLY_HAS_COROUTINES 0
+-#else
+-#define FOLLY_HAS_COROUTINES 0
+-#endif
+-#else
+ #define FOLLY_HAS_COROUTINES 0
+-#endif // __cplusplus >= 201703L
+ 
+ // MSVC 2017.5 && C++17
+ #if __cpp_noexcept_function_type >= 201510 || \
 diff --git a/folly/Singleton.h b/folly/Singleton.h
 index d7f094748..59d96bbde 100644
 --- a/folly/Singleton.h
@@ -110,6 +177,18 @@ index 30f22f7d3..5c3226e24 100644
  
  #include <folly/ConstexprMath.h>
  #include <folly/Optional.h>
+diff --git a/folly/detail/MemoryIdler.cpp b/folly/detail/MemoryIdler.cpp
+index 0134a4c29..2b7ee2da9 100644
+--- a/folly/detail/MemoryIdler.cpp
++++ b/folly/detail/MemoryIdler.cpp
+@@ -190,7 +190,6 @@ void MemoryIdler::unmapUnusedStack(size_t retain) {
+     // are bad.) Warn in debug mode, since MemoryIdler may not function as
+     // expected.
+     // We can also get an EAGAIN, theoretically.
+-    PLOG_IF(WARNING, kIsDebug && errno == EINVAL) << "madvise failed";
+     assert(errno == EAGAIN || errno == ENOMEM || errno == EINVAL);
+   }
+ }
 diff --git a/folly/detail/ThreadLocalDetail.h b/folly/detail/ThreadLocalDetail.h
 index a00741f84..49aecf9bf 100644
 --- a/folly/detail/ThreadLocalDetail.h
@@ -136,8 +215,83 @@ index 67a227f58..70321db66 100644
  
  #include <folly/Portability.h>
  #include <folly/chrono/Hardware.h>
+diff --git a/folly/memory/MallctlHelper.cpp b/folly/memory/MallctlHelper.cpp
+index 2af9ab403..4a032e715 100644
+--- a/folly/memory/MallctlHelper.cpp
++++ b/folly/memory/MallctlHelper.cpp
+@@ -16,22 +16,14 @@
+ 
+ #include <folly/memory/MallctlHelper.h>
+ 
+-#include <folly/Format.h>
+-#include <folly/String.h>
+ 
+ #include <stdexcept>
+ 
+ namespace folly {
+-
+-namespace detail {
+-
+-[[noreturn]] void handleMallctlError(const char* fn, const char* cmd, int err) {
+-  assert(err != 0);
+-  cmd = cmd ? cmd : "<none>";
+-  throw std::runtime_error(
+-      sformat("mallctl[{}] {}: {} ({})", fn, cmd, errnoStr(err), err));
+-}
+-
+-} // namespace detail
+-
++    namespace detail {
++        [[noreturn]] void handleMallctlError(const char *fn, const char *cmd, int err) {
++            assert(err != 0);
++            throw std::runtime_error("fancy exception here");
++        }
++    } // namespace detail
+ } // namespace folly
+diff --git a/folly/stub/logging.h b/folly/stub/logging.h
+new file mode 100644
+index 000000000..e55b35e08
+--- /dev/null
++++ b/folly/stub/logging.h
+@@ -0,0 +1,23 @@
++#ifndef LOGGING_H
++#define LOGGING_H
++#include <cassert>
++#include <iostream>
++
++#define DCHECK_LE(a,b) assert(a <= b)
++#define DCHECK_LT(a,b) assert(a < b)
++#define DCHECK_GE(a,b) assert(a >= b)
++#define DCHECK_GT(a,b) assert(a > b)
++#define DCHECK_EQ(a,b) assert(a==b)
++#define DCHECK_NE(a,b) assert(a!=b)
++#define DCHECK(exp) assert(exp)
++
++#define CHECK_LE(a,b) assert(a <= b)
++#define CHECK_LT(a,b) assert(a < b)
++#define CHECK_GE(a,b) assert(a >= b)
++#define CHECK_GT(a,b) assert(a > b)
++#define CHECK_EQ(a,b) assert(a==b)
++#define CHECK_NE(a,b) assert(a!=b)
++
++#define LOG(...) std::cerr
++
++#endif //LOGGING_H
+diff --git a/folly/synchronization/HazptrDomain.h b/folly/synchronization/HazptrDomain.h
+index 8b1a81eca..9a5f5777e 100644
+--- a/folly/synchronization/HazptrDomain.h
++++ b/folly/synchronization/HazptrDomain.h
+@@ -19,6 +19,8 @@
+ #include <atomic>
+ #include <unordered_set>
+ 
++#include <folly/stub/logging.h>
++
+ #include <folly/Memory.h>
+ #include <folly/Portability.h>
+ #include <folly/executors/QueuedImmediateExecutor.h>
 diff --git a/folly/synchronization/HazptrObj.h b/folly/synchronization/HazptrObj.h
-index a872d8c70..3f4da84e0 100644
+index a872d8c70..853912461 100644
 --- a/folly/synchronization/HazptrObj.h
 +++ b/folly/synchronization/HazptrObj.h
 @@ -19,7 +19,7 @@
@@ -149,6 +303,16 @@ index a872d8c70..3f4da84e0 100644
  
  #include <folly/CPortability.h>
  #include <folly/Portability.h>
+@@ -386,8 +386,7 @@ class hazptr_obj_cohort {
+         if (kIsDebug) {
+           Obj* p = ll.head();
+           for (int i = 1; p; ++i, p = p->next()) {
+-            DCHECK_EQ(reinterpret_cast<uintptr_t>(p) & 7, uintptr_t{0})
+-                << p << " " << i;
++            DCHECK_EQ(reinterpret_cast<uintptr_t>(p) & 7, uintptr_t{0});
+           }
+         }
+         hazptr_obj_list<Atom> l(ll.head(), ll.tail(), c);
 diff --git a/folly/synchronization/HazptrObjLinked.h b/folly/synchronization/HazptrObjLinked.h
 index 772b442c6..d68369ad5 100644
 --- a/folly/synchronization/HazptrObjLinked.h

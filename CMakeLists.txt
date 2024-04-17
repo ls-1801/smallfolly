@@ -3,6 +3,9 @@ project(smallfolly)
 
 set(CMAKE_CXX_STANDARD 20)
 
+# Currently there is a dependency on BOOST-MPL
+find_package(Boost REQUIRED)
+
 add_library(smallfolly
         folly/folly/SharedMutex.cpp
         folly/folly/ScopeGuard.cpp
@@ -28,6 +31,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 target_compile_features(smallfolly PRIVATE cxx_std_20)
 
 target_include_directories(smallfolly PUBLIC
+        ${Boost_INCLUDE_DIRS}
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/folly>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/config>
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)

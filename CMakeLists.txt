@@ -143,7 +143,6 @@ set(lang
         ${header_path}/StaticConst.h
         ${header_path}/Align.h
         ${header_path}/Exception.h
-        ${header_path}/SafeAssert.h
         ${header_path}/CArray.h
         ${header_path}/CString.h
         ${header_path}/TypeInfo.h

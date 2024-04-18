@@ -58,7 +58,7 @@ index b2b3c0872..92ee5bc37 100644
  #ifndef FB_LOG_EVERY_MS
  /**
 diff --git a/folly/Portability.h b/folly/Portability.h
-index 10b563baf..0ed7ccd9f 100644
+index c327cf8ba..0ed7ccd9f 100644
 --- a/folly/Portability.h
 +++ b/folly/Portability.h
 @@ -534,35 +534,7 @@ constexpr auto kCpplibVer = 0;
@@ -79,7 +79,7 @@ index 10b563baf..0ed7ccd9f 100644
 -// the LLVM implementation of coroutines on Windows.
 -#define FOLLY_HAS_COROUTINES 0
 -#elif (__cpp_coroutines >= 201703L || __cpp_impl_coroutine >= 201902L) && \
--    ((__has_include(<coroutine>) && !defined(__clang__)) || (__has_include(<experimental/coroutine>) && defined(__clang__)))
+-    (__has_include(<coroutine>) || __has_include(<experimental/coroutine>))
 -#define FOLLY_HAS_COROUTINES 1
 -// This is mainly to workaround bugs triggered by LTO, when stack allocated
 -// variables in await_suspend end up on a coroutine frame.
@@ -299,7 +299,7 @@ index 2af9ab403..4a032e715 100644
  } // namespace folly
 diff --git a/folly/stub/logging.h b/folly/stub/logging.h
 new file mode 100644
-index 000000000..e55b35e08
+index 000000000..b57ca58c6
 --- /dev/null
 +++ b/folly/stub/logging.h
 @@ -0,0 +1,23 @@
@@ -308,20 +308,20 @@ index 000000000..e55b35e08
 +#include <cassert>
 +#include <iostream>
 +
-+#define DCHECK_LE(a,b) assert(a <= b)
-+#define DCHECK_LT(a,b) assert(a < b)
-+#define DCHECK_GE(a,b) assert(a >= b)
-+#define DCHECK_GT(a,b) assert(a > b)
-+#define DCHECK_EQ(a,b) assert(a==b)
-+#define DCHECK_NE(a,b) assert(a!=b)
++#define DCHECK_LE(a,b) assert((a) <= (b))
++#define DCHECK_LT(a,b) assert((a) < (b))
++#define DCHECK_GE(a,b) assert((a) >= (b))
++#define DCHECK_GT(a,b) assert((a) > (b))
++#define DCHECK_EQ(a,b) assert((a)==(b))
++#define DCHECK_NE(a,b) assert((a)!=(b))
 +#define DCHECK(exp) assert(exp)
 +
-+#define CHECK_LE(a,b) assert(a <= b)
-+#define CHECK_LT(a,b) assert(a < b)
-+#define CHECK_GE(a,b) assert(a >= b)
-+#define CHECK_GT(a,b) assert(a > b)
-+#define CHECK_EQ(a,b) assert(a==b)
-+#define CHECK_NE(a,b) assert(a!=b)
++#define CHECK_LE(a,b) assert((a) <= (b))
++#define CHECK_LT(a,b) assert((a) < (b))
++#define CHECK_GE(a,b) assert((a) >= (b))
++#define CHECK_GT(a,b) assert((a) > (b))
++#define CHECK_EQ(a,b) assert((a)==(b))
++#define CHECK_NE(a,b) assert((a)!=(b))
 +
 +#define LOG(...) std::cerr
 +

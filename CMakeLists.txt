@@ -18,23 +18,23 @@ add_library(smallfolly
         folly/folly/synchronization/ParkingLot.cpp
         folly/folly/synchronization/SanitizeThread.cpp
 
-
         # Required for MPMC
         folly/folly/synchronization/AsymmetricMemoryBarrier.cpp
         folly/folly/synchronization/Hazptr.cpp
         folly/folly/detail/MemoryIdler.cpp
         folly/folly/detail/UniqueInstance.cpp
         folly/folly/executors/QueuedImmediateExecutor.cpp
-        folly/folly/lang/SafeAssert.cpp
+        folly/folly/Executor.cpp
+        folly/folly/portability/SysMembarrier.cpp
+        folly/folly/memory/MallctlHelper.cpp
 )
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 target_compile_features(smallfolly PRIVATE cxx_std_20)
 
 target_include_directories(smallfolly PUBLIC
         ${Boost_INCLUDE_DIRS}
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/folly>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/config>
-        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/config>)
 
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
@@ -67,7 +67,6 @@ install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}-targets # create export s
 install(EXPORT ${PROJECT_NAME}-targets
         NAMESPACE smallfolly::
         DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME})
-
 
 
 set(header_path "folly/folly")

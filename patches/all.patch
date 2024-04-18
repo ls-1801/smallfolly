@@ -12,18 +12,37 @@ index d446e29bf..3b3118c61 100644
  #include <folly/Likely.h>
  #include <folly/Portability.h>
 diff --git a/folly/Executor.cpp b/folly/Executor.cpp
-index 39c6b151c..ce7a725f3 100644
+index 39c6b151c..18300c4c1 100644
 --- a/folly/Executor.cpp
 +++ b/folly/Executor.cpp
-@@ -18,7 +18,7 @@
+@@ -18,9 +18,8 @@
  
  #include <stdexcept>
  
 -#include <glog/logging.h>
 +#include <folly/stub/logging.h>
  
- #include <folly/ExceptionString.h>
+-#include <folly/ExceptionString.h>
  #include <folly/Portability.h>
+ #include <folly/lang/Exception.h>
+ 
+@@ -28,7 +27,15 @@ namespace folly {
+ 
+ void Executor::invokeCatchingExnsLog(char const* const prefix) noexcept {
+   auto ep = std::current_exception();
+-  LOG(ERROR) << prefix << " threw unhandled " << exceptionStr(ep);
++        try
++        {
++            std::rethrow_exception(ep);
++        }
++        catch (const std::exception& e)
++        {
++            // This will be printed.
++           LOG(ERROR) << prefix << "threw unhandled : " << e.what() << std::endl;
++        }
+ }
+ 
+ void Executor::addWithPriority(Func, int8_t /* priority */) {
 diff --git a/folly/GLog.h b/folly/GLog.h
 index b2b3c0872..92ee5bc37 100644
 --- a/folly/GLog.h
@@ -215,6 +234,36 @@ index 67a227f58..70321db66 100644
  
  #include <folly/Portability.h>
  #include <folly/chrono/Hardware.h>
+diff --git a/folly/detail/UniqueInstance.cpp b/folly/detail/UniqueInstance.cpp
+index 02b9c51ca..5b42dfddc 100644
+--- a/folly/detail/UniqueInstance.cpp
++++ b/folly/detail/UniqueInstance.cpp
+@@ -22,7 +22,7 @@
+ #include <stdexcept>
+ #include <string>
+ 
+-#include <folly/Demangle.h>
++#include <folly/FBString.h>
+ #include <folly/lang/Exception.h>
+ 
+ namespace folly {
+@@ -59,14 +59,14 @@ std::string join(PtrRange types) {
+     if (t != types.b) {
+       ret << ", ";
+     }
+-    ret << demangle((*t)->name());
++    ret << (*t)->name();
+   }
+   return ret.str();
+ }
+ 
+ template <typename Value>
+ fbstring render_tmpl(Value value) {
+-  auto const str = demangle(value.tmpl->name());
++  auto const str = fbstring(value.tmpl->name());
+   auto const off = str.find('<');
+   return str.substr(off + 1, str.size() - off - 2);
+ }
 diff --git a/folly/memory/MallctlHelper.cpp b/folly/memory/MallctlHelper.cpp
 index 2af9ab403..4a032e715 100644
 --- a/folly/memory/MallctlHelper.cpp
